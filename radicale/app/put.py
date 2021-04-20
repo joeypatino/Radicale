@@ -112,7 +112,7 @@ def prepare(vobject_items, path, content_type, permissions, parent_permissions,
 
 
 class ApplicationPutMixin:
-    def do_PUT(self, environ, base_prefix, path, user):
+    def do_PUT(self, environ, base_prefix, path, user, context=None):
         """Manage PUT request."""
         access = app.Access(self._rights, user, path)
         if not access.check("w"):
@@ -139,7 +139,7 @@ class ApplicationPutMixin:
              bool(rights.intersect(access.permissions, "Ww")),
              bool(rights.intersect(access.parent_permissions, "w")))
 
-        with self._storage.acquire_lock("w", user):
+        with self._storage.acquire_lock("w", user, path, context):
             item = next(self._storage.discover(path), None)
             parent_item = next(
                 self._storage.discover(access.parent_path), None)

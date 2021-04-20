@@ -1283,7 +1283,7 @@ class Auth(BaseAuth):
                     login, password)
         if password == static_password:
             return login
-        return ""
+        return "", None
 ```
 
 Install the python module by running the following command in the same folder

@@ -48,7 +48,7 @@ class StorageLockMixin:
         self._lock = pathutils.RwLock(lock_path)
 
     @contextlib.contextmanager
-    def acquire_lock(self, mode, user=None):
+    def acquire_lock(self, mode, user=None, path=None, context=None):
         with self._lock.acquire(mode):
             yield
             # execute hook
@@ -69,7 +69,8 @@ class StorageLockMixin:
                 elif os.name == "nt":
                     popen_kwargs["creationflags"] = (
                         subprocess.CREATE_NEW_PROCESS_GROUP)
-                command = hook % {"user": shlex.quote(user or "Anonymous")}
+                absolute_file_path = self._get_collection_root_folder() + (path or "/")
+                command = hook % {"user": shlex.quote(user or "Anonymous"), "action" : "PUT", "file": shlex.quote(absolute_file_path or ""), "context": str(context) or ""}
                 logger.debug("Running storage hook")
                 p = subprocess.Popen(command, **popen_kwargs)
                 try:
@@ -89,3 +90,8 @@ class StorageLockMixin:
                     logger.debug("Captured stderr from hook:\n%s", stderr_data)
                 if p.returncode != 0:
                     raise subprocess.CalledProcessError(p.returncode, p.args)
+
+    def _get_collection_root_folder(self):
+        filesystem_folder = self.configuration.get(
+            "storage", "filesystem_folder")
+        return os.path.join(filesystem_folder, "collection-root")

@@ -19,7 +19,7 @@
 
 
 class ApplicationHeadMixin:
-    def do_HEAD(self, environ, base_prefix, path, user):
+    def do_HEAD(self, environ, base_prefix, path, user, context=None):
         """Manage HEAD request."""
-        status, headers, _ = self.do_GET(environ, base_prefix, path, user)
+        status, headers, _ = self.do_GET(environ, base_prefix, path, user, context)
         return status, headers, None

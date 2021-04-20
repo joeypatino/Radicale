@@ -28,7 +28,7 @@ from radicale.log import logger
 
 
 class ApplicationMkcalendarMixin:
-    def do_MKCALENDAR(self, environ, base_prefix, path, user):
+    def do_MKCALENDAR(self, environ, base_prefix, path, user, context=None):
         """Manage MKCALENDAR request."""
         if "w" not in self._rights.authorization(user, path):
             return httputils.NOT_ALLOWED
@@ -53,7 +53,7 @@ class ApplicationMkcalendarMixin:
             logger.warning(
                 "Bad MKCALENDAR request on %r: %s", path, e, exc_info=True)
             return httputils.BAD_REQUEST
-        with self._storage.acquire_lock("w", user):
+        with self._storage.acquire_lock("w", user, path, context):
             item = next(self._storage.discover(path), None)
             if item:
                 return self._webdav_error_response(

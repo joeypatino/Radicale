@@ -68,7 +68,7 @@ class BaseAuth:
 
         ``password`` the password
 
-        Returns the user name or ``""`` for invalid credentials.
+        Returns a tuple ``(username, context=None)`` or None for invalid credentials.
 
         """
 

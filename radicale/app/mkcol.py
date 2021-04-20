@@ -28,7 +28,7 @@ from radicale.log import logger
 
 
 class ApplicationMkcolMixin:
-    def do_MKCOL(self, environ, base_prefix, path, user):
+    def do_MKCOL(self, environ, base_prefix, path, user, context=None):
         """Manage MKCOL request."""
         permissions = self._rights.authorization(user, path)
         if not rights.intersect(permissions, "Ww"):
@@ -54,7 +54,7 @@ class ApplicationMkcolMixin:
         if (props.get("tag") and "w" not in permissions or
                 not props.get("tag") and "W" not in permissions):
             return httputils.NOT_ALLOWED
-        with self._storage.acquire_lock("w", user):
+        with self._storage.acquire_lock("w", user, path, context):
             item = next(self._storage.discover(path), None)
             if item:
                 return httputils.METHOD_NOT_ALLOWED

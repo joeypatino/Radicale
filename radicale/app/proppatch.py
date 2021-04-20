@@ -64,7 +64,7 @@ def xml_proppatch(base_prefix, path, xml_request, collection):
 
 
 class ApplicationProppatchMixin:
-    def do_PROPPATCH(self, environ, base_prefix, path, user):
+    def do_PROPPATCH(self, environ, base_prefix, path, user, context=None):
         """Manage PROPPATCH request."""
         access = app.Access(self._rights, user, path)
         if not access.check("w"):
@@ -78,7 +78,7 @@ class ApplicationProppatchMixin:
         except socket.timeout:
             logger.debug("Client timed out", exc_info=True)
             return httputils.REQUEST_TIMEOUT
-        with self._storage.acquire_lock("w", user):
+        with self._storage.acquire_lock("w", user, path, context):
             item = next(self._storage.discover(path), None)
             if not item:
                 return httputils.NOT_FOUND

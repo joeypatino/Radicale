@@ -118,11 +118,11 @@ class Auth(auth.BaseAuth):
                                 hash_login.encode(), login.encode())
                             password_ok = self._verify(hash_value, password)
                             if login_ok and password_ok:
-                                return login
+                                return login, None
                         except ValueError as e:
                             raise RuntimeError("Invalid htpasswd file %r: %s" %
                                                (self._filename, e)) from e
         except OSError as e:
             raise RuntimeError("Failed to load htpasswd file %r: %s" %
                                (self._filename, e)) from e
-        return ""
+        return "", None

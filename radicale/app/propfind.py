@@ -345,7 +345,7 @@ class ApplicationPropfindMixin:
             if permission:
                 yield item, permission
 
-    def do_PROPFIND(self, environ, base_prefix, path, user):
+    def do_PROPFIND(self, environ, base_prefix, path, user, context=None):
         """Manage PROPFIND request."""
         access = app.Access(self._rights, user, path)
         if not access.check("r"):
@@ -359,7 +359,7 @@ class ApplicationPropfindMixin:
         except socket.timeout:
             logger.debug("Client timed out", exc_info=True)
             return httputils.REQUEST_TIMEOUT
-        with self._storage.acquire_lock("r", user):
+        with self._storage.acquire_lock("r", user, path, context):
             items = self._storage.discover(
                 path, environ.get("HTTP_DEPTH", "0"))
             # take root item for rights checking

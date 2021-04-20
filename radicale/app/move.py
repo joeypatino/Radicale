@@ -26,7 +26,7 @@ from radicale.log import logger
 
 
 class ApplicationMoveMixin:
-    def do_MOVE(self, environ, base_prefix, path, user):
+    def do_MOVE(self, environ, base_prefix, path, user, context=None):
         """Manage MOVE request."""
         raw_dest = environ.get("HTTP_DESTINATION", "")
         to_url = urlparse(raw_dest)
@@ -47,7 +47,7 @@ class ApplicationMoveMixin:
         if not to_access.check("w"):
             return httputils.NOT_ALLOWED
 
-        with self._storage.acquire_lock("w", user):
+        with self._storage.acquire_lock("w", user, path, context):
             item = next(self._storage.discover(path), None)
             if not item:
                 return httputils.NOT_FOUND

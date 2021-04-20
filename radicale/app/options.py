@@ -23,7 +23,7 @@ from radicale import httputils
 
 
 class ApplicationOptionsMixin:
-    def do_OPTIONS(self, environ, base_prefix, path, user):
+    def do_OPTIONS(self, environ, base_prefix, path, user, context=None):
         """Manage OPTIONS request."""
         headers = {
             "Allow": ", ".join(

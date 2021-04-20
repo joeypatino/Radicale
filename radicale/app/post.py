@@ -22,8 +22,8 @@ from radicale import httputils
 
 
 class ApplicationPostMixin:
-    def do_POST(self, environ, base_prefix, path, user):
+    def do_POST(self, environ, base_prefix, path, user, context=None):
         """Manage POST request."""
         if path == "/.web" or path.startswith("/.web/"):
-            return self._web.post(environ, base_prefix, path, user)
+            return self._web.post(environ, base_prefix, path, user, context)
         return httputils.METHOD_NOT_ALLOWED

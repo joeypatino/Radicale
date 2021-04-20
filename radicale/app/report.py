@@ -256,7 +256,7 @@ def xml_item_response(base_prefix, href, found_props=(), not_found_props=(),
 
 
 class ApplicationReportMixin:
-    def do_REPORT(self, environ, base_prefix, path, user):
+    def do_REPORT(self, environ, base_prefix, path, user, context=None):
         """Manage REPORT request."""
         access = app.Access(self._rights, user, path)
         if not access.check("r"):
@@ -271,7 +271,7 @@ class ApplicationReportMixin:
             logger.debug("Client timed out", exc_info=True)
             return httputils.REQUEST_TIMEOUT
         with contextlib.ExitStack() as lock_stack:
-            lock_stack.enter_context(self._storage.acquire_lock("r", user))
+            lock_stack.enter_context(self._storage.acquire_lock("r", user, path, context))
             item = next(self._storage.discover(path), None)
             if not item:
                 return httputils.NOT_FOUND

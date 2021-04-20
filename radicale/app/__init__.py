@@ -228,7 +228,7 @@ class Application(
                 self.configuration, environ, base64.b64decode(
                     authorization.encode("ascii"))).split(":", 1)
 
-        user = self._auth.login(login, password) or "" if login else ""
+        user, context = self._auth.login(login, password) or ("", None) if login else ("", None)
         if user and login == user:
             logger.info("Successful login: %r", user)
         elif user:
@@ -251,12 +251,12 @@ class Application(
         # Create principal collection
         if user:
             principal_path = "/%s/" % user
-            with self._storage.acquire_lock("r", user):
+            with self._storage.acquire_lock("r", user, principal_path):
                 principal = next(self._storage.discover(
                     principal_path, depth="1"), None)
             if not principal:
                 if "W" in self._rights.authorization(user, principal_path):
-                    with self._storage.acquire_lock("w", user):
+                    with self._storage.acquire_lock("w", user, principal_path):
                         try:
                             self._storage.create_collection(principal_path)
                         except ValueError as e:
@@ -279,7 +279,7 @@ class Application(
 
         if not login or user:
             status, headers, answer = function(
-                environ, base_prefix, path, user)
+                environ, base_prefix, path, user, context)
             if (status, headers, answer) == httputils.NOT_ALLOWED:
                 logger.info("Access to %r denied for %s", path,
                             repr(user) if user else "anonymous user")

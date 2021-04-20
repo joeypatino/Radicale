@@ -56,7 +56,7 @@ class ApplicationGetMixin:
             value += "; filename*=%s''%s" % (self._encoding, encoded_filename)
         return value
 
-    def do_GET(self, environ, base_prefix, path, user):
+    def do_GET(self, environ, base_prefix, path, user, context=None):
         """Manage GET request."""
         # Redirect to .web if the root URL is requested
         if not pathutils.strip_path(path):
@@ -73,7 +73,7 @@ class ApplicationGetMixin:
         access = app.Access(self._rights, user, path)
         if not access.check("r") and "i" not in access.permissions:
             return httputils.NOT_ALLOWED
-        with self._storage.acquire_lock("r", user):
+        with self._storage.acquire_lock("r", user, path, context):
             item = next(self._storage.discover(path), None)
             if not item:
                 return httputils.NOT_FOUND
