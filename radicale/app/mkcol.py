@@ -54,7 +54,7 @@ class ApplicationMkcolMixin:
         if (props.get("tag") and "w" not in permissions or
                 not props.get("tag") and "W" not in permissions):
             return httputils.NOT_ALLOWED
-        with self._storage.acquire_lock("w", user, path, context):
+        with self._storage.acquire_lock("w", "MKCOL", user, path, context):
             item = next(self._storage.discover(path), None)
             if item:
                 return httputils.METHOD_NOT_ALLOWED

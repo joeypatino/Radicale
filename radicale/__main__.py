@@ -143,7 +143,7 @@ def run():
         logger.info("Verifying storage")
         try:
             storage_ = storage.load(configuration)
-            with storage_.acquire_lock("r"):
+            with storage_.acquire_lock("r", "VERIFY"):
                 if not storage_.verify():
                     logger.fatal("Storage verifcation failed")
                     sys.exit(1)

@@ -139,7 +139,7 @@ class ApplicationPutMixin:
              bool(rights.intersect(access.permissions, "Ww")),
              bool(rights.intersect(access.parent_permissions, "w")))
 
-        with self._storage.acquire_lock("w", user, path, context):
+        with self._storage.acquire_lock("w", "PUT", user, path, context):
             item = next(self._storage.discover(path), None)
             parent_item = next(
                 self._storage.discover(access.parent_path), None)

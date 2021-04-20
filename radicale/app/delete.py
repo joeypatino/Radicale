@@ -52,7 +52,7 @@ class ApplicationDeleteMixin:
         access = app.Access(self._rights, user, path)
         if not access.check("w"):
             return httputils.NOT_ALLOWED
-        with self._storage.acquire_lock("w", user, path, context):
+        with self._storage.acquire_lock("w", "DELETE", user, path, context):
             item = next(self._storage.discover(path), None)
             if not item:
                 return httputils.NOT_FOUND

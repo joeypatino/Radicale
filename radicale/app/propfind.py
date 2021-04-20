@@ -359,7 +359,7 @@ class ApplicationPropfindMixin:
         except socket.timeout:
             logger.debug("Client timed out", exc_info=True)
             return httputils.REQUEST_TIMEOUT
-        with self._storage.acquire_lock("r", user, path, context):
+        with self._storage.acquire_lock("r", "PROPFIND", user, path, context):
             items = self._storage.discover(
                 path, environ.get("HTTP_DEPTH", "0"))
             # take root item for rights checking

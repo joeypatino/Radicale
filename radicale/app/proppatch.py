@@ -78,7 +78,7 @@ class ApplicationProppatchMixin:
         except socket.timeout:
             logger.debug("Client timed out", exc_info=True)
             return httputils.REQUEST_TIMEOUT
-        with self._storage.acquire_lock("w", user, path, context):
+        with self._storage.acquire_lock("w", "PROPPATCH", user, path, context):
             item = next(self._storage.discover(path), None)
             if not item:
                 return httputils.NOT_FOUND

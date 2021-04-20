@@ -53,7 +53,7 @@ class ApplicationMkcalendarMixin:
             logger.warning(
                 "Bad MKCALENDAR request on %r: %s", path, e, exc_info=True)
             return httputils.BAD_REQUEST
-        with self._storage.acquire_lock("w", user, path, context):
+        with self._storage.acquire_lock("w", "MKCALENDAR", user, path, context):
             item = next(self._storage.discover(path), None)
             if item:
                 return self._webdav_error_response(

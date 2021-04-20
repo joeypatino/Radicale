@@ -271,7 +271,7 @@ class ApplicationReportMixin:
             logger.debug("Client timed out", exc_info=True)
             return httputils.REQUEST_TIMEOUT
         with contextlib.ExitStack() as lock_stack:
-            lock_stack.enter_context(self._storage.acquire_lock("r", user, path, context))
+            lock_stack.enter_context(self._storage.acquire_lock("r", "REPORT", user, path, context))
             item = next(self._storage.discover(path), None)
             if not item:
                 return httputils.NOT_FOUND
