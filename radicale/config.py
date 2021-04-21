@@ -174,7 +174,11 @@ DEFAULT_CONFIG_SCHEMA = OrderedDict([
         ("delay", {
             "value": "1",
             "help": "incorrect authentication delay",
-            "type": positive_float})])),
+            "type": positive_float}),
+        ("secret", {
+            "value": "none",
+            "help": "Bearer token secret",
+            "type": str})])),
     ("rights", OrderedDict([
         ("type", {
             "value": "owner_only",

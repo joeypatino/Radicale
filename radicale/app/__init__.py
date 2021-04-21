@@ -36,6 +36,7 @@ import sys
 import time
 import xml.etree.ElementTree as ET
 import zlib
+import jwt
 from http import client
 
 import pkg_resources
@@ -228,7 +229,20 @@ class Application(
                 self.configuration, environ, base64.b64decode(
                     authorization.encode("ascii"))).split(":", 1)
 
-        user, context = self._auth.login(login, password) or ("", None) if login else ("", None)
+        # Check for a bearer token
+        user, context = "", None
+        if authorization.startswith("Bearer"):
+            authorization = authorization[len("Bearer"):].strip()
+            secret = self.configuration.get("auth", "secret")
+            try:
+                payload = jwt.decode(authorization, secret, algorithms=["HS256"])
+                user, context = str(payload['user']), None
+            except Exception:
+                return response(*httputils.METHOD_NOT_ALLOWED)
+
+        if not user:
+            user, context = self._auth.login(login, password) or ("", None) if login else ("", None)
+
         if user and login == user:
             logger.info("Successful login: %r", user)
         elif user:
