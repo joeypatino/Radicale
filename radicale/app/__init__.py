@@ -40,8 +40,8 @@ from http import client
 
 import pkg_resources
 
-from radicale import (auth, httputils, log, pathutils, rights, storage, web,
-                      xmlutils)
+from radicale import (auth, hook, httputils, log, pathutils, rights, storage,
+                      web, xmlutils)
 from radicale.app.delete import ApplicationDeleteMixin
 from radicale.app.get import ApplicationGetMixin
 from radicale.app.head import ApplicationHeadMixin
@@ -88,6 +88,7 @@ class Application(
         self._rights = rights.load(configuration)
         self._web = web.load(configuration)
         self._encoding = configuration.get("encoding", "request")
+        self._hook = hook.load(configuration)
 
     def _headers_log(self, environ):
         """Sanitize headers for logging."""

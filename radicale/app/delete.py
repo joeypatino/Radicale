@@ -21,6 +21,7 @@ import xml.etree.ElementTree as ET
 from http import client
 
 from radicale import app, httputils, storage, xmlutils
+from radicale.hook import HookNotificationItem, HookNotificationItemTypes
 
 
 def xml_delete(base_prefix, path, collection, href=None):
@@ -62,10 +63,28 @@ class ApplicationDeleteMixin:
             if if_match not in ("*", item.etag):
                 # ETag precondition not verified, do not delete item
                 return httputils.PRECONDITION_FAILED
+            hook_notification_item_list = []
             if isinstance(item, storage.BaseCollection):
+                for i in item.get_all():
+                    hook_notification_item_list.append(
+                        HookNotificationItem(
+                            HookNotificationItemTypes.DELETE,
+                            access.path,
+                            i.uid
+                        )
+                    )
                 xml_answer = xml_delete(base_prefix, path, item)
             else:
+                hook_notification_item_list.append(
+                    HookNotificationItem(
+                        HookNotificationItemTypes.DELETE,
+                        access.path,
+                        item.uid
+                    )
+                )
                 xml_answer = xml_delete(
                     base_prefix, path, item.collection, item.href)
+            for i in hook_notification_item_list:
+                self._hook.notify(i)
             headers = {"Content-Type": "text/xml; charset=%s" % self._encoding}
             return client.OK, headers, self._xml_response(xml_answer)

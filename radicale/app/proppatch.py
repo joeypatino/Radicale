@@ -22,9 +22,12 @@ import socket
 import xml.etree.ElementTree as ET
 from http import client
 
+import defusedxml.ElementTree as DefusedET
+
 from radicale import app, httputils
 from radicale import item as radicale_item
 from radicale import storage, xmlutils
+from radicale.hook import HookNotificationItem, HookNotificationItemTypes
 from radicale.log import logger
 
 
@@ -91,6 +94,16 @@ class ApplicationProppatchMixin:
             try:
                 xml_answer = xml_proppatch(base_prefix, path, xml_content,
                                            item)
+                if xml_content is not None:
+                    hook_notification_item = HookNotificationItem(
+                        HookNotificationItemTypes.CPATCH,
+                        access.path,
+                        DefusedET.tostring(
+                            xml_content,
+                            encoding=self._encoding
+                        ).decode(encoding=self._encoding)
+                    )
+                    self._hook.notify(hook_notification_item)
             except ValueError as e:
                 logger.warning(
                     "Bad PROPPATCH request on %r: %s", path, e, exc_info=True)
