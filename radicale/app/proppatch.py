@@ -67,7 +67,7 @@ def xml_proppatch(base_prefix, path, xml_request, collection):
 
 
 class ApplicationProppatchMixin:
-    def do_PROPPATCH(self, environ, base_prefix, path, user):
+    def do_PROPPATCH(self, environ, base_prefix, path, user, context=None):
         """Manage PROPPATCH request."""
         access = app.Access(self._rights, user, path)
         if not access.check("w"):
@@ -101,7 +101,8 @@ class ApplicationProppatchMixin:
                         DefusedET.tostring(
                             xml_content,
                             encoding=self._encoding
-                        ).decode(encoding=self._encoding)
+                        ).decode(encoding=self._encoding),
+                        context
                     )
                     self._hook.notify(hook_notification_item)
             except ValueError as e:

@@ -28,7 +28,7 @@ from radicale.log import logger
 
 
 class ApplicationMkcolMixin:
-    def do_MKCOL(self, environ, base_prefix, path, user):
+    def do_MKCOL(self, environ, base_prefix, path, user, context=None):
         """Manage MKCOL request."""
         permissions = self._rights.authorization(user, path)
         if not rights.intersect(permissions, "Ww"):

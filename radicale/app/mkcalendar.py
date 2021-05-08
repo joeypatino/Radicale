@@ -28,7 +28,7 @@ from radicale.log import logger
 
 
 class ApplicationMkcalendarMixin:
-    def do_MKCALENDAR(self, environ, base_prefix, path, user):
+    def do_MKCALENDAR(self, environ, base_prefix, path, user, context=None):
         """Manage MKCALENDAR request."""
         if "w" not in self._rights.authorization(user, path):
             return httputils.NOT_ALLOWED

@@ -36,6 +36,7 @@ import sys
 import time
 import xml.etree.ElementTree as ET
 import zlib
+import jwt
 from http import client
 
 import pkg_resources
@@ -218,6 +219,8 @@ class Application(
 
         # Ask authentication backend to check rights
         login = password = ""
+        context = None
+        user = None
         external_login = self._auth.get_external_login(environ)
         authorization = environ.get("HTTP_AUTHORIZATION", "")
         if external_login:
@@ -228,8 +231,25 @@ class Application(
             login, password = httputils.decode_request(
                 self.configuration, environ, base64.b64decode(
                     authorization.encode("ascii"))).split(":", 1)
+        elif authorization.startswith("Bearer"):
+            authorization = authorization[len("Bearer"):].strip()
+            secret = self.configuration.get("auth", "token_secret")
+            try:
+                payload = jwt.decode(authorization, secret, algorithms=["HS256"])
+                user, context = payload['user'], authorization
+                login = user
+            except Exception:
+                return response(*httputils.METHOD_NOT_ALLOWED)
 
-        user = self._auth.login(login, password) or "" if login else ""
+        if not user:
+            user = self._auth.login(login, password) or "" if login else ""
+            secret = self.configuration.get("auth", "token_secret")
+            if not context and secret:
+                try:
+                    context = jwt.encode({'user': user}, secret, algorithm="HS256")
+                except:
+                    pass
+
         if user and login == user:
             logger.info("Successful login: %r", user)
         elif user:
@@ -280,7 +300,7 @@ class Application(
 
         if not login or user:
             status, headers, answer = function(
-                environ, base_prefix, path, user)
+                environ, base_prefix, path, user, context)
             if (status, headers, answer) == httputils.NOT_ALLOWED:
                 logger.info("Access to %r denied for %s", path,
                             repr(user) if user else "anonymous user")

@@ -45,10 +45,11 @@ def _cleanup(path):
 
 class HookNotificationItem:
 
-    def __init__(self, notification_item_type, path, content):
+    def __init__(self, notification_item_type, path, content, context=None):
         self.type = notification_item_type.value
         self.point = _cleanup(path)
         self.content = content
+        self.context = context
 
     def to_json(self):
         return json.dumps(

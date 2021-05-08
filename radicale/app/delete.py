@@ -48,7 +48,7 @@ def xml_delete(base_prefix, path, collection, href=None):
 
 
 class ApplicationDeleteMixin:
-    def do_DELETE(self, environ, base_prefix, path, user):
+    def do_DELETE(self, environ, base_prefix, path, user, context=None):
         """Manage DELETE request."""
         access = app.Access(self._rights, user, path)
         if not access.check("w"):
@@ -70,7 +70,8 @@ class ApplicationDeleteMixin:
                         HookNotificationItem(
                             HookNotificationItemTypes.DELETE,
                             access.path,
-                            i.uid
+                            i.uid,
+                            None
                         )
                     )
                 xml_answer = xml_delete(base_prefix, path, item)
@@ -79,7 +80,8 @@ class ApplicationDeleteMixin:
                     HookNotificationItem(
                         HookNotificationItemTypes.DELETE,
                         access.path,
-                        item.uid
+                        item.uid,
+                        context
                     )
                 )
                 xml_answer = xml_delete(

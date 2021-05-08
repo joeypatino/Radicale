@@ -26,7 +26,7 @@ from radicale.log import logger
 
 
 class ApplicationMoveMixin:
-    def do_MOVE(self, environ, base_prefix, path, user):
+    def do_MOVE(self, environ, base_prefix, path, user, context=None):
         """Manage MOVE request."""
         raw_dest = environ.get("HTTP_DESTINATION", "")
         to_url = urlparse(raw_dest)

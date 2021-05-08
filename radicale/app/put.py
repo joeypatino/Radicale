@@ -113,7 +113,7 @@ def prepare(vobject_items, path, content_type, permissions, parent_permissions,
 
 
 class ApplicationPutMixin:
-    def do_PUT(self, environ, base_prefix, path, user):
+    def do_PUT(self, environ, base_prefix, path, user, context=None):
         """Manage PUT request."""
         access = app.Access(self._rights, user, path)
         if not access.check("w"):
@@ -198,7 +198,8 @@ class ApplicationPutMixin:
                         hook_notification_item = HookNotificationItem(
                             HookNotificationItemTypes.UPSERT,
                             access.path,
-                            item.serialize()
+                            item.serialize(),
+                            context
                         )
                         self._hook.notify(hook_notification_item)
                 except ValueError as e:
@@ -219,7 +220,8 @@ class ApplicationPutMixin:
                     hook_notification_item = HookNotificationItem(
                         HookNotificationItemTypes.UPSERT,
                         access.path,
-                        prepared_item.serialize()
+                        prepared_item.serialize(),
+                        context
                     )
                     self._hook.notify(hook_notification_item)
                 except ValueError as e:

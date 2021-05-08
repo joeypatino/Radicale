@@ -345,7 +345,7 @@ class ApplicationPropfindMixin:
             if permission:
                 yield item, permission
 
-    def do_PROPFIND(self, environ, base_prefix, path, user):
+    def do_PROPFIND(self, environ, base_prefix, path, user, context=None):
         """Manage PROPFIND request."""
         access = app.Access(self._rights, user, path)
         if not access.check("r"):

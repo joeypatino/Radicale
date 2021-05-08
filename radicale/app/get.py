@@ -56,7 +56,7 @@ class ApplicationGetMixin:
             value += "; filename*=%s''%s" % (self._encoding, encoded_filename)
         return value
 
-    def do_GET(self, environ, base_prefix, path, user):
+    def do_GET(self, environ, base_prefix, path, user, context=None):
         """Manage GET request."""
         # Redirect to .web if the root URL is requested
         if not pathutils.strip_path(path):

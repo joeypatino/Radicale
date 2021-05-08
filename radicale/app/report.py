@@ -256,7 +256,7 @@ def xml_item_response(base_prefix, href, found_props=(), not_found_props=(),
 
 
 class ApplicationReportMixin:
-    def do_REPORT(self, environ, base_prefix, path, user):
+    def do_REPORT(self, environ, base_prefix, path, user, context=None):
         """Manage REPORT request."""
         access = app.Access(self._rights, user, path)
         if not access.check("r"):
